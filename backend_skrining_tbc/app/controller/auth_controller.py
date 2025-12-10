@@ -39,16 +39,20 @@ def register():
 @auth_bp.route("/login", methods=["POST"])
 def login():
     data = request.get_json()
-    access_token = login_user(
+    login_result = login_user(
         email=data["email"],
         password=data["password"]
     )
-    if not access_token:
+    if not login_result:
         return jsonify({"message": "Email atau password salah"}), 401
 
+    # KEMBALI: sertakan id dan nama
     return jsonify({
         "message": "Login berhasil",
-        "access_token": access_token
+        "access_token": login_result["access_token"],
+        "role": login_result["role"],
+        "id": login_result["id"],
+        "nama": login_result["nama"]
     }), 200
 
 

@@ -1,6 +1,6 @@
-"use client";
+"use client"
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/button"
 import {
   Form,
   FormControl,
@@ -8,31 +8,57 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Separator } from "@/components/ui/separator";
-import { zodResolver } from "@hookform/resolvers/zod";
-import Link from "next/link";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { Separator } from "@/components/ui/separator"
+import { loginUser } from "@/app/services/auth.services" // Impor service
+import { zodResolver } from "@hookform/resolvers/zod"
+import Link from "next/link"
+import { useRouter } from "next/navigation" // Gunakan useRouter
+import { useForm } from "react-hook-form"
+import { z } from "zod"
 
 const formSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(8, "Password must be at least 8 characters long"),
-});
+  email: z.string().email("Email tidak valid"),
+  password: z.string().min(8, "Password minimal 8 karakter"),
+})
 
 const SignUp02Page = () => {
+  const router = useRouter()
   const form = useForm<z.infer<typeof formSchema>>({
     defaultValues: {
       email: "",
       password: "",
     },
     resolver: zodResolver(formSchema),
-  });
+  })
 
-  const onSubmit = (data: z.infer<typeof formSchema>) => {
-    console.log(data);
-  };
+  // Perbarui fungsi onSubmit
+  const onSubmit = async (data: z.infer<typeof formSchema>) => {
+    try {
+      const result = await loginUser(data)
+      console.log("Login berhasil:", result)
+
+      // PERBAIKAN: Logika redirect berdasarkan role
+      let redirectPath = "/" // Default path jika role tidak dikenali
+      switch (result.role) {
+        case "user":
+          redirectPath = "/user"
+          break
+        case "admin_puskesmas":
+          redirectPath = "/dashboard-admin-puskesmas"
+          break
+        case "super_admin":
+          redirectPath = "/dashboard-super-admin"
+          break
+      }
+      
+      router.push(redirectPath)
+    } catch (error) {
+      console.error("Terjadi kesalahan saat login", error)
+      alert("Login gagal. Periksa kembali email dan password Anda.")
+    }
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-muted">
@@ -57,6 +83,7 @@ const SignUp02Page = () => {
             className="w-full space-y-4"
             onSubmit={form.handleSubmit(onSubmit)}
           >
+            {/* ... FormField lainnya tetap sama ... */}
             <FormField
               control={form.control}
               name="email"
@@ -101,15 +128,17 @@ const SignUp02Page = () => {
 
         <p className="mt-5 text-sm text-center">
           Belum punya akun?
-          <Link href="/auth/register" className="ml-1 underline text-muted-foreground">
+          <Link
+            href="/auth/register"
+            className="ml-1 underline text-muted-foreground"
+          >
             Buat akun
           </Link>
-          
         </p>
       </div>
     </div>
-  );
-};
+  )
+}
 
 const GoogleLogo = () => (
   <svg
@@ -145,6 +174,6 @@ const GoogleLogo = () => (
       </clipPath>
     </defs>
   </svg>
-);
+)
 
-export default SignUp02Page;
+export default SignUp02Page

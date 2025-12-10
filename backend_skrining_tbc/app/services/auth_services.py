@@ -50,7 +50,8 @@ def login_user(email, password):
             expires_delta=timedelta(hours=24)
         )
         print("Token berhasil dibuat")
-        return access_token
+        # KEMBALI: sertakan id dan nama agar frontend bisa menyimpan token per-user
+        return {"access_token": access_token, "role": role_value, "id": user.id, "nama": user.nama}
     except Exception as e:
         print("Gagal membuat token:", e)
         return None

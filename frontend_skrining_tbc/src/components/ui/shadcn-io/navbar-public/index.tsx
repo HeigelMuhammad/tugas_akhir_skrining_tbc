@@ -1,9 +1,11 @@
-'use client';
+"use client";
 
 import * as React from 'react';
 import { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { BookOpenIcon, InfoIcon, LifeBuoyIcon } from 'lucide-react';
+import { logoutUser } from '@/app/services/auth.services';
 import { Button } from '@/components/ui/button';
 import {
   NavigationMenu,
@@ -87,10 +89,9 @@ export interface Navbar02Props extends React.HTMLAttributes<HTMLElement> {
 
 // Default navigation links
 const defaultNavigationLinks: Navbar02NavItem[] = [
-  { href: '/dashboard', label: 'Dashboard' },
-  { href: '/data-pasien', label: 'Data Pasien' },
-  { href: '/screening-data', label: 'Screening' },
-  { href: '/riwayat-screening', label: 'Riwayat' },
+  { href: '/user', label: 'Dashboard' },
+  { href: '/user/data-pasien', label: 'Data Pasien' },
+  { href: '/user/riwayat-screening', label: 'Riwayat' },
 
   {
     label: 'Edukasi TBC',
@@ -122,6 +123,13 @@ export const Navbar02 = React.forwardRef<HTMLElement, Navbar02Props>(
   ) => {
     const [isMobile, setIsMobile] = useState(false);
     const containerRef = useRef<HTMLElement>(null);
+    const router = useRouter();
+
+    const handleLogout = async () => {
+      await logoutUser(); // Memanggil endpoint logout di backend
+      localStorage.removeItem("accessToken"); // Menghapus token dari local storage
+      router.push("/"); // Mengarahkan ke halaman utama
+    };
 
     useEffect(() => {
       const checkWidth = () => {
@@ -321,7 +329,7 @@ export const Navbar02 = React.forwardRef<HTMLElement, Navbar02Props>(
           </div>
           {/* Right side */}
           <div className="flex items-center gap-3">
-            <Link href="/profile">
+            <Link href="/user/profil">
               <Button variant="ghost" size="sm">
                 Profil Saya
               </Button>
@@ -330,7 +338,7 @@ export const Navbar02 = React.forwardRef<HTMLElement, Navbar02Props>(
             <Button
               size="sm"
               className="px-4"
-              onClick={() => console.log("logout action")}
+              onClick={handleLogout}
             >
               Logout
             </Button>

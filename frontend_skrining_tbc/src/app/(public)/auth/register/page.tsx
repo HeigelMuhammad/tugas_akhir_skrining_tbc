@@ -1,7 +1,6 @@
-"use client";
+"use client"
 
-import { Logo } from "@/components/logo";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/button"
 import {
   Form,
   FormControl,
@@ -9,38 +8,54 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Separator } from "@/components/ui/separator";
-import { zodResolver } from "@hookform/resolvers/zod";
-import Link from "next/link";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { Separator } from "@/components/ui/separator"
+import { registerUser } from "@/app/services/auth.services" // Impor service
+import { zodResolver } from "@hookform/resolvers/zod"
+import Link from "next/link"
+import { useRouter } from "next/navigation" // Gunakan useRouter
+import { useForm } from "react-hook-form"
+import { z } from "zod"
 
-const formSchema = z.object({
-  fullName: z.string().min(1, "Nama lengkap wajib diisi"),
-  email: z.string().email(),
-  password: z.string().min(8, "Password must be at least 8 characters long"),
-  confirmPassword: z.string(),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Password tidak cocok",
-  path: ["confirmPassword"],
-});
+// Ganti fullName menjadi nama agar sesuai dengan backend
+const formSchema = z
+  .object({
+    nama: z.string().min(1, "Nama lengkap wajib diisi"),
+    email: z.string().email("Email tidak valid"),
+    password: z.string().min(8, "Password minimal 8 karakter"),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Password tidak cocok",
+    path: ["confirmPassword"],
+  })
 
 const SignUp02Page = () => {
+  const router = useRouter()
   const form = useForm<z.infer<typeof formSchema>>({
     defaultValues: {
-      fullName: "",
+      nama: "",
       email: "",
       password: "",
       confirmPassword: "",
     },
     resolver: zodResolver(formSchema),
-  });
+  })
 
-  const onSubmit = (data: z.infer<typeof formSchema>) => {
-    console.log(data);
-  };
+  // Perbarui fungsi onSubmit
+  const onSubmit = async (data: z.infer<typeof formSchema>) => {
+    try {
+      const { confirmPassword, ...registerData } = data
+      const result = await registerUser(registerData)
+      console.log("Registrasi berhasil:", result)
+      alert("Registrasi berhasil! Silakan login.")
+      router.push("/auth/login") // Arahkan ke halaman login
+    } catch (error) {
+      console.error("Terjadi kesalahan saat registrasi", error)
+      alert("Registrasi gagal. Coba lagi.")
+    }
+  }
 
   return (
     <div className="pt-32 pb-28 min-h-screen flex items-center justify-center bg-muted">
@@ -67,7 +82,7 @@ const SignUp02Page = () => {
           >
             <FormField
               control={form.control}
-              name="fullName"
+              name="nama" // Ganti menjadi nama
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Nama Lengkap</FormLabel>
@@ -83,6 +98,7 @@ const SignUp02Page = () => {
                 </FormItem>
               )}
             />
+            {/* ... form field lainnya tetap sama ... */}
             <FormField
               control={form.control}
               name="email"
@@ -137,20 +153,7 @@ const SignUp02Page = () => {
                 </FormItem>
               )}
             />
-            <Button
-              type="submit"
-              className="mt-4 w-full"
-              onClick={async (e) => {
-              e.preventDefault();
-              const valid = await form.trigger();
-              if (valid) {
-                form.handleSubmit((data) => {
-                console.log(data);
-                window.location.href = "/screening-data";
-                })(e);
-              }
-              }}
-            >
+            <Button type="submit" className="mt-4 w-full">
               Buat Akun
             </Button>
           </form>
@@ -158,16 +161,21 @@ const SignUp02Page = () => {
 
         <p className="mt-5 text-sm text-center">
           Already have an account?
-          <Link href="/auth/login" className="ml-1 underline text-muted-foreground">
+          <Link
+            href="/auth/login"
+            className="ml-1 underline text-muted-foreground"
+          >
             Log in
           </Link>
         </p>
       </div>
     </div>
-  );
-};
+  )
+}
 
 const GoogleLogo = () => (
+  // ... SVG code
+// ...existing code...
   <svg
     width="1.2em"
     height="1.2em"
@@ -201,6 +209,6 @@ const GoogleLogo = () => (
       </clipPath>
     </defs>
   </svg>
-);
+)
 
-export default SignUp02Page;
+export default SignUp02Page

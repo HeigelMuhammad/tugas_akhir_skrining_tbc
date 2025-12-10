@@ -4,6 +4,8 @@ from app.controller import skrining_controller
 from app.controller import wilayah_controller
 from flask import Blueprint
 from app.controller import auth_controller
+# Impor user_controller yang baru
+from app.controller.user_controller import user_bp
 
 #TEST ROUTES
 @app.route('/')
@@ -52,6 +54,15 @@ def create_skrining():
 def update_status_skrining(id):
     return skrining_controller.update_status_skrining(id)
 
+@app.route('/skrining/statistik', methods=['GET'])
+def get_skrining_statistik():
+    return skrining_controller.get_statistik()
+
+@app.route('/skrining/pasien/<int:pasien_id>', methods=['GET'])
+def get_skrining_by_pasien(pasien_id):
+    return skrining_controller.get_by_pasien(pasien_id)
+
+
 #WILAYAH ROUTES
 @app.route('/provinsi', methods=['GET'])
 def get_provinsi():
@@ -64,4 +75,7 @@ def get_kabupaten(provinsi_id):
 @app.route('/kecamatan/<int:kabupaten_id>', methods=['GET'])
 def get_kecamatan(kabupaten_id):
     return wilayah_controller.get_kecamatan(kabupaten_id)
+
+# Daftarkan Blueprint untuk user management dengan prefix /users
+app.register_blueprint(user_bp, url_prefix='/users')
 

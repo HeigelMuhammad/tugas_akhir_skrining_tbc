@@ -18,18 +18,16 @@ export const metadata: Metadata = {
   description: "Aplikasi Skrining TB",
 };
 
-export default function RootLayout({
+export default function PublicLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <NavbarPublic />
-        <main>{children}</main>
-        <Footer05Page />
-      </body>
-    </html>
+    <>
+      <NavbarPublic />
+      <main>{children}</main>
+      <Footer05Page />
+    </>
   );
 }

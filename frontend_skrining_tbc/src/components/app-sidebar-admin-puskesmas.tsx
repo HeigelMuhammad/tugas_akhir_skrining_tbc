@@ -2,25 +2,16 @@
 
 import * as React from "react"
 import {
-  IconCamera,
-  IconChartBar,
   IconDashboard,
-  IconDatabase,
-  IconFileAi,
-  IconFileDescription,
-  IconFileWord,
-  IconFolder,
+  IconUsers,
+  IconReportAnalytics,
+  IconSettings,
   IconHelp,
   IconInnerShadowTop,
-  IconListDetails,
-  IconReport,
-  IconSearch,
-  IconSettings,
-  IconUsers,
+  IconSend
 } from "@tabler/icons-react"
 
-import { NavDocuments } from "@/components/nav-documents"
-import { NavMainSuperadmin } from "@/components/nav-main-superadmin"
+import { NavMainAdminPuskesmas } from "@/components/nav-main-admin-puskesmas"
 import { NavSecondary } from "@/components/nav-secondary"
 import { NavUser } from "@/components/nav-user"
 import {
@@ -33,124 +24,54 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 
-const data = {
+// PERBAIKAN: Tipe data untuk props, termasuk user
+interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
   user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
+    nama: string
+    email: string
+  } | null
+}
+
+const navData = {
+  // Hapus 'user' dari sini, pindahkan ke props
   navMain: [
     {
       title: "Dashboard",
-      url: "#",
+      url: "/dashboard-admin-puskesmas",
       icon: IconDashboard,
     },
     {
-      title: "Lifecycle",
-      url: "#",
-      icon: IconListDetails,
-    },
-    {
-      title: "Analytics",
-      url: "#",
-      icon: IconChartBar,
-    },
-    {
-      title: "Projects",
-      url: "#",
-      icon: IconFolder,
-    },
-    {
-      title: "Team",
-      url: "#",
+      title: "Data Pasien",
+      url: "/dashboard-admin-puskesmas/data-pasien",
       icon: IconUsers,
     },
-  ],
-  navClouds: [
     {
-      title: "Capture",
-      icon: IconCamera,
-      isActive: true,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
+      title: "Data Rujukan",
+      url: "/dashboard-admin-puskesmas/data-rujukan",
+      icon: IconSend,
     },
     {
-      title: "Proposal",
-      icon: IconFileDescription,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Prompts",
-      icon: IconFileAi,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
+      title: "Laporan",
+      url: "/admin/laporan",
+      icon: IconReportAnalytics,
     },
   ],
   navSecondary: [
     {
       title: "Settings",
-      url: "#",
+      url: "/admin/settings",
       icon: IconSettings,
     },
     {
-      title: "Get Help",
-      url: "#",
+      title: "Bantuan",
+      url: "/help",
       icon: IconHelp,
-    },
-    {
-      title: "Search",
-      url: "#",
-      icon: IconSearch,
-    },
-  ],
-  documents: [
-    {
-      name: "Data Library",
-      url: "#",
-      icon: IconDatabase,
-    },
-    {
-      name: "Reports",
-      url: "#",
-      icon: IconReport,
-    },
-    {
-      name: "Word Assistant",
-      url: "#",
-      icon: IconFileWord,
     },
   ],
 }
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+// PERBAIKAN: Terima 'user' sebagai props
+export function AppSidebar({ user, ...props }: AppSidebarProps) {
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
@@ -160,21 +81,23 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               asChild
               className="data-[slot=sidebar-menu-button]:!p-1.5"
             >
-              <a href="#">
+              <a href="/dashboard-admin-puskesmas">
                 <IconInnerShadowTop className="!size-5" />
-                <span className="text-base font-semibold">TBCheck</span>
+                <span className="text-base font-semibold">TBCheck Admin</span>
               </a>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
+
       <SidebarContent>
-        <NavMainSuperadmin items={data.navMain} />
-        <NavDocuments items={data.documents} />
-        <NavSecondary items={data.navSecondary} className="mt-auto" />
+        <NavMainAdminPuskesmas items={navData.navMain} />
+        <NavSecondary className="mt-auto" items={navData.navSecondary} />
       </SidebarContent>
+
       <SidebarFooter>
-        <NavUser user={data.user} />
+        {/* PERBAIKAN: Gunakan 'user' dari props dan hanya render jika ada */}
+        {user && <NavUser user={user} />}
       </SidebarFooter>
     </Sidebar>
   )
