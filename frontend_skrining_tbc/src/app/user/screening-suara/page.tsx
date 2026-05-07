@@ -163,7 +163,7 @@ function DeteksiSuaraContent() {
       setPendingResult(null)
     }
     setShowResult(true)
-    
+
     // Redirect ke hasil-screening setelah animasi dan deteksi selesai
     if (pasienId) {
       // Kasih sedikit delay agar user bisa melihat bahwa animasi selesai
@@ -289,8 +289,8 @@ function DeteksiSuaraContent() {
                   {isRecording
                     ? "Sedang merekam batuk..."
                     : recordedBlob
-                    ? "Rekaman selesai"
-                    : "Tekan untuk mulai rekam"}
+                      ? "Rekaman selesai"
+                      : "Tekan untuk mulai rekam"}
                 </p>
                 {isRecording && (
                   <p className="text-xs text-muted-foreground mt-1">{formatTime(seconds)}</p>
