@@ -13,6 +13,7 @@ import {
 import html2canvas from "html2canvas"
 import jsPDF from "jspdf"
 import { Download } from "lucide-react" // Optional: Icon download jika pakai lucide-react
+import { ResultVisualizer } from "@/components/ResultVisualizer"
 
 function HasilScreeningContent() {
   const searchParams = useSearchParams()
@@ -264,6 +265,25 @@ function HasilScreeningContent() {
             </div>
           </div>
         </section>
+
+        {/* Hasil Analisis AI Suara Batuk (Opsional) */}
+        {hasilScreening.skor_suara_ai != null && hasilScreening.gradcam_image && (
+          <section className="mt-8 rounded-lg p-4 sm:p-6" style={{ backgroundColor: "#f4f4f5" }}>
+            <p className="text-xs font-semibold uppercase mb-4" style={{ color: "#71717a" }}>
+              Analisis Suara Batuk AI ({hasilScreening.metode_skrining})
+            </p>
+            <ResultVisualizer 
+              data={{
+                diagnosis: hasilScreening.skor_suara_ai > 50 ? "Suspek TBC" : "Normal",
+                confidence: Math.max(hasilScreening.skor_suara_ai, 100 - hasilScreening.skor_suara_ai),
+                prob_tbc: hasilScreening.skor_suara_ai,
+                prob_normal: 100 - hasilScreening.skor_suara_ai,
+                gradcam_image: hasilScreening.gradcam_image,
+                algoritma: (hasilScreening.metode_skrining || "").includes("DenseNet") ? "DenseNet" : "CNN"
+              }}
+            />
+          </section>
+        )}
 
       </div>
 
